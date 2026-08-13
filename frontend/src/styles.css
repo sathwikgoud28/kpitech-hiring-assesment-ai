@@ -1,0 +1,213 @@
+/* Deliberately hand-written CSS rather than a component library.
+   The brief asks for a "clean and functional UI" - this is ~400 lines I can
+   explain, instead of a dependency I would have to justify. */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #e2e5ea;
+  --text: #1a1d23;
+  --muted: #666e7a;
+  --accent: #2f5bd7;
+  --accent-soft: #eaf0fe;
+  --green: #10794a;
+  --green-soft: #e4f4ec;
+  --amber: #8a5a00;
+  --amber-soft: #fdf1dc;
+  --red: #b3261e;
+  --red-soft: #fdeceb;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.2rem; margin: 0 0 .75rem; }
+h3 { font-size: 1rem; margin: 0 0 .5rem; }
+
+/* ---------- layout ---------- */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: .75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.brand { font-weight: 700; font-size: 1.05rem; color: var(--text); }
+.brand span { color: var(--accent); }
+.nav { display: flex; gap: .35rem; flex: 1; flex-wrap: wrap; }
+.nav a {
+  padding: .4rem .7rem;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-weight: 500;
+}
+.nav a:hover { background: var(--bg); text-decoration: none; }
+.nav a.active { background: var(--accent-soft); color: var(--accent); }
+.topbar-user { display: flex; align-items: center; gap: .6rem; font-size: .875rem; color: var(--muted); }
+
+.page { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+.page-head { margin-bottom: 1.25rem; }
+.page-head p { color: var(--muted); margin: 0; }
+
+/* ---------- surfaces ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.card-tight { padding: .85rem 1rem; }
+
+.grid { display: grid; gap: 1rem; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+.row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+.row-between { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.spacer { flex: 1; }
+
+/* ---------- forms ---------- */
+label { display: block; font-weight: 600; font-size: .82rem; margin-bottom: .3rem; color: var(--text); }
+.field { margin-bottom: .9rem; }
+.hint { font-size: .78rem; color: var(--muted); font-weight: 400; margin-top: .25rem; }
+
+input, textarea, select {
+  width: 100%;
+  padding: .5rem .65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+textarea { resize: vertical; min-height: 90px; }
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: .5rem .9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { filter: brightness(1.07); }
+button:disabled { opacity: .55; cursor: not-allowed; }
+button.secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+button.danger { background: var(--surface); color: var(--red); border-color: #e9bdbb; }
+button.small { padding: .28rem .6rem; font-size: .8rem; }
+
+/* ---------- badges & tags ---------- */
+.badge {
+  display: inline-block;
+  padding: .12rem .5rem;
+  border-radius: 999px;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.badge-open, .badge-shortlisted { background: var(--green-soft); color: var(--green); }
+.badge-closed, .badge-rejected { background: var(--red-soft); color: var(--red); }
+.badge-applied { background: var(--amber-soft); color: var(--amber); }
+.badge-neutral { background: var(--bg); color: var(--muted); }
+
+.tag {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: .78rem;
+  color: var(--muted);
+}
+.tag-match { background: var(--green-soft); border-color: #bfe3d0; color: var(--green); }
+.tag-gap { background: var(--amber-soft); border-color: #f0dcb4; color: var(--amber); }
+.tag-removable { cursor: pointer; }
+.tag-removable:hover { border-color: var(--red); color: var(--red); }
+
+.meta { color: var(--muted); font-size: .84rem; }
+.meta-dot::before { content: '·'; margin: 0 .4rem; }
+
+/* ---------- stats ---------- */
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .9rem 1rem; }
+.stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1.1; }
+.stat-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+/* ---------- bars ---------- */
+.bar-row { display: grid; grid-template-columns: minmax(110px, 190px) 1fr 42px; gap: .6rem; align-items: center; margin-bottom: .4rem; font-size: .85rem; }
+.bar-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+.bar-value { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- match results ---------- */
+.score-pill {
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: .3rem .7rem;
+  border-radius: var(--radius);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.score-strong { background: var(--green-soft); color: var(--green); }
+.score-good { background: var(--accent-soft); color: var(--accent); }
+.score-partial { background: var(--amber-soft); color: var(--amber); }
+.score-weak { background: var(--bg); color: var(--muted); }
+
+.reasons { margin: .6rem 0 0; padding-left: 1.15rem; }
+.reasons li { margin-bottom: .2rem; font-size: .88rem; }
+
+.breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .5rem; margin-top: .8rem; padding-top: .8rem; border-top: 1px dashed var(--border); }
+.breakdown-item { font-size: .75rem; }
+.breakdown-item .bar-track { height: 6px; margin-top: .2rem; }
+.breakdown-label { color: var(--muted); text-transform: capitalize; display: flex; justify-content: space-between; }
+
+/* ---------- tables ---------- */
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+tbody tr:last-child td { border-bottom: none; }
+
+/* ---------- feedback ---------- */
+.alert { padding: .65rem .9rem; border-radius: var(--radius); margin-bottom: 1rem; font-size: .88rem; }
+.alert-error { background: var(--red-soft); color: var(--red); border: 1px solid #e9bdbb; }
+.alert-success { background: var(--green-soft); color: var(--green); border: 1px solid #bfe3d0; }
+.alert-info { background: var(--accent-soft); color: var(--accent); border: 1px solid #c7d7fa; }
+
+.empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+.loading { padding: 2rem; text-align: center; color: var(--muted); }
+
+/* ---------- auth screens ---------- */
+.auth-wrap { max-width: 420px; margin: 3.5rem auto; padding: 0 1.25rem; }
+.auth-wrap .card { padding: 1.5rem; }
+.demo-accounts { font-size: .8rem; color: var(--muted); margin-top: 1rem; border-top: 1px solid var(--border); padding-top: .9rem; }
+.demo-accounts code { background: var(--bg); padding: .1rem .35rem; border-radius: 4px; font-size: .78rem; }
+.demo-accounts button { margin-top: .4rem; }
