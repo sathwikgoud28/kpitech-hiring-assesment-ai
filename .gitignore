@@ -27,6 +27,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ---- Private notes (not part of the submission) ----
+DEVELOPMENT_LOG.md
+
 # ---- Editors / OS ----
 .vscode/
 .idea/
