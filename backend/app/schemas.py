@@ -219,6 +219,9 @@ class MatchRequest(BaseModel):
     # When true and the caller is a signed-in candidate, their saved profile is
     # blended into the query so results reflect skills they did not retype.
     use_profile: bool = True
+    # When true and an API key is configured, the top deterministic results are
+    # re-ranked and re-explained by an LLM. Falls back silently if unavailable.
+    use_llm: bool = True
 
 
 class ScoreBreakdown(BaseModel):
@@ -239,6 +242,13 @@ class MatchResult(BaseModel):
     matched_skills: list[str]
     missing_skills: list[str]
     breakdown: ScoreBreakdown
+    # Populated only when the LLM layer ran and judged this particular result.
+    engine_score: float | None = Field(
+        default=None, description="The deterministic score before LLM blending."
+    )
+    llm_relevance: float | None = Field(
+        default=None, description="The LLM's own 0-100 relevance judgement."
+    )
 
 
 class ParsedIntent(BaseModel):
@@ -260,6 +270,10 @@ class MatchResponse(BaseModel):
     used_profile: bool
     total_open_jobs: int
     results: list[MatchResult]
+    # How the results were ranked, so the UI can be honest about which path ran.
+    llm_used: bool = False
+    llm_model: str | None = None
+    llm_available: bool = False
 
 
 # --------------------------------------------------------------------------- #
