@@ -1,5 +1,8 @@
 """FastAPI application entry point."""
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +16,19 @@ from app.routers import applications, auth, candidates, dashboard, jobs, matchin
 # Import models so SQLAlchemy registers every table before create_all runs.
 from app import models  # noqa: F401  (imported for the side effect)
 
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    """Create tables on boot.
+
+    Fine for a project of this size. A production deployment would use Alembic
+    migrations instead, so schema changes are versioned and reversible.
+    """
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title=settings.app_name,
     version="1.0.0",
     description=(
@@ -31,16 +46,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def on_startup() -> None:
-    """Create tables on boot.
-
-    Fine for a project of this size. A production deployment would use Alembic
-    migrations instead, so schema changes are versioned and reversible.
-    """
-    Base.metadata.create_all(bind=engine)
 
 
 # --------------------------------------------------------------------------- #
