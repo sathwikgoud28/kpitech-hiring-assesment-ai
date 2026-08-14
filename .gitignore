@@ -29,6 +29,9 @@ pnpm-debug.log*
 
 # ---- Private notes (not part of the submission) ----
 DEVELOPMENT_LOG.md
+*.docx
+*.pptx
+Resume - Project Points.txt
 
 # ---- Editors / OS ----
 .vscode/
