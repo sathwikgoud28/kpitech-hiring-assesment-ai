@@ -24,13 +24,14 @@ const SIGNAL_LABELS = {
 export default function AiMatch() {
   const [query, setQuery] = useState('')
   const [useProfile, setUseProfile] = useState(true)
+  const [useLlm, setUseLlm] = useState(true)
   const [response, setResponse] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [applying, setApplying] = useState(null)
   const [applied, setApplied] = useState({})
 
-  async function runMatch(text) {
+  async function runMatch(text, llmOverride) {
     const value = (text ?? query).trim()
     if (value.length < 3) {
       setError('Describe what you are looking for in a few more words.')
@@ -39,7 +40,12 @@ export default function AiMatch() {
     setError('')
     setBusy(true)
     try {
-      const data = await api.match({ query: value, limit: 10, use_profile: useProfile })
+      const data = await api.match({
+        query: value,
+        limit: 10,
+        use_profile: useProfile,
+        use_llm: llmOverride ?? useLlm,
+      })
       setResponse(data)
     } catch (err) {
       setError(err.message)
@@ -116,6 +122,15 @@ export default function AiMatch() {
             />
             Blend in my saved profile
           </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem', margin: 0, fontWeight: 500 }}>
+            <input
+              type="checkbox"
+              checked={useLlm}
+              onChange={(event) => setUseLlm(event.target.checked)}
+              style={{ width: 'auto' }}
+            />
+            Use LLM re-ranking
+          </label>
         </div>
 
         <div style={{ marginTop: '.9rem' }}>
@@ -160,6 +175,32 @@ export default function AiMatch() {
                 {response.used_profile ? 'Profile blended in' : 'Query only'}
               </div>
             </div>
+
+            <div className="row" style={{ marginTop: '.7rem', paddingTop: '.7rem', borderTop: '1px dashed var(--border)' }}>
+              <span className={`badge ${response.llm_used ? 'badge-shortlisted' : 'badge-neutral'}`}>
+                {response.llm_used ? 'Two-stage: engine + LLM' : 'Stage 1 only: deterministic engine'}
+              </span>
+              <span className="meta">
+                {response.llm_used ? (
+                  <>
+                    Top {Math.min(8, response.results.length)} re-ranked and re-explained by{' '}
+                    <strong>{response.llm_model}</strong>. Scores blend both stages 50/50.
+                  </>
+                ) : response.llm_available ? (
+                  'LLM layer is configured but was not used for this search.'
+                ) : (
+                  'No LLM key configured — running fully offline on the deterministic engine.'
+                )}
+              </span>
+              <button
+                className="secondary small"
+                style={{ marginLeft: 'auto' }}
+                disabled={busy}
+                onClick={() => runMatch(response.query, !response.llm_used)}
+              >
+                {response.llm_used ? 'Re-run without LLM' : 'Re-run with LLM'}
+              </button>
+            </div>
           </div>
 
           {response.results.length === 0 && (
@@ -172,7 +213,14 @@ export default function AiMatch() {
                 <div style={{ flex: 1 }}>
                   <JobDetails job={result.job} matchedSkills={result.matched_skills} />
                 </div>
-                <div className={`score-pill ${scoreClass(result.score)}`}>{Math.round(result.score)}%</div>
+                <div style={{ textAlign: 'right' }}>
+                  <div className={`score-pill ${scoreClass(result.score)}`}>{Math.round(result.score)}%</div>
+                  {result.engine_score != null && (
+                    <div className="meta" style={{ fontSize: '.72rem', marginTop: '.3rem', whiteSpace: 'nowrap' }}>
+                      engine {Math.round(result.engine_score)} · LLM {Math.round(result.llm_relevance)}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <p style={{ marginTop: '.75rem', marginBottom: 0, fontWeight: 600, fontSize: '.9rem' }}>
